@@ -15,6 +15,9 @@ library(shinythemes)
 
 bakery <- read.csv('data.csv')
 
+bakery <- bakery %>%
+  filter(Item != 'NONE')
+
 choices <- as.vector(head(bakery$Item, 30))
 
 bakery$Date <- ymd(bakery$Date)
@@ -31,7 +34,9 @@ shinyUI(
       sidebarMenu(
         menuItem("Overview", tabName = "overview", icon=icon("home")),
         menuItem("Explore Item", tabName = "item", icon=icon("apple", class = NULL, lib = "glyphicon")),
-        menuItem("Explore Time & Day", tabName = "time", icon=icon("time", class = NULL, lib = "glyphicon"))
+        menuItem("Explore Time & Day", tabName = "time", icon=icon("time", class = NULL, lib = "glyphicon")),
+        #menuItem("Recomendation", tabName = "recomendation", icon=icon("ok", class = NULL, lib = "glyphicon")),
+        menuItem("Github Links", icon=icon("github"), href="https://github.com/danangan/algoritma-dvcapstone")
       )
     ),
     dashboardBody(
@@ -61,7 +66,7 @@ shinyUI(
               title='About the data',
               solidHeader = T,
               width=3,
-              p('The data is record of a bakery transaction.'),
+              p('The data is record of a bakery transaction which contain information about date, time, and the item sold.'),
               p('Data source: kaggle')
             )
           ),
@@ -84,7 +89,7 @@ shinyUI(
             box(
               solidHeader=T,
               width=9,
-              plotlyOutput("itemPlot", height = 450)
+              plotlyOutput("itemPlot", height = 400)
             ),
             box(
               solidHeader=T,
@@ -99,14 +104,14 @@ shinyUI(
         ),
         tabItem("time",
           fluidRow(
-            valueBoxOutput("bestDay"),
-            valueBoxOutput("bestTime")
+            infoBoxOutput("bestDay"),
+            infoBoxOutput("bestTime")
           ),
           fluidRow(
             box(
               solidHeader=T,
               width=12,
-              plotlyOutput("timePlot", height = 600) 
+              plotlyOutput("timePlot", height = 500) 
             )
           )
         )

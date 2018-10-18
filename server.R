@@ -15,7 +15,8 @@ library(plotly)
 
 bakery <- read.csv('data.csv')
 
-bakery_raw <- bakery
+bakery <- bakery %>%
+  filter(Item != 'NONE')
 
 bakery$Date <- ymd(bakery$Date)
 
@@ -42,7 +43,7 @@ hourToTimePeriod <- function(x) {
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
   output$dataTable <- renderDataTable(
-    bakery_raw
+    bakery
   )  
   
   output$overviewPlot <- renderPlotly({
@@ -143,7 +144,7 @@ shinyServer(function(input, output) {
       geom_col(aes(fill=MeanSales))+
       facet_grid(weekday ~ .)+
       theme_minimal() +
-      scale_fill_gradient(low = 'red3', high = 'green3')
+      scale_fill_gradient(low = 'goldenrod', high = 'green3')
     
     plot <- plot + theme(legend.position = 'none', axis.title = element_blank())
     
@@ -165,9 +166,11 @@ shinyServer(function(input, output) {
       summarize(Total=length(Date)) %>%
       arrange(-Total)
     
-    valueBox(
-      time[1, 'TimePeriod'], "Best sales time", icon = icon("time"),
-      color = "blue"
+    infoBox(
+      title = "Best sales time",
+      value = time[1, 'TimePeriod'],
+      color = 'blue',
+      subtitle = 'Time with highest sales average'
     )
   })
   
@@ -187,9 +190,11 @@ shinyServer(function(input, output) {
       summarize(Total=length(Date)) %>%
       arrange(-Total)
     
-    valueBox(
-      time[[1, 'weekday']], "Best day for sales",
-      color = "yellow"
+    infoBox(
+      title = "Best sales day",
+      value = time[[1, 'weekday']],
+      color = 'green',
+      subtitle = 'Day with highest sales average'
     )
   })
   
